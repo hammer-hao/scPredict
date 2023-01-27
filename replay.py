@@ -29,18 +29,13 @@ replay_list = recursereplays(replays)
 
 def generate_unit_snapshot(snapshot, player_codes, protosswin):
     #generate empty unit data
-    totalunits={}
+    snapshot_dict={}
     for i in range(2):
+        race=player_codes[i+1]
+        player_info=snapshot[i+1]
+        #getting units data
         unitsdict={}
-        for unitname in configurations.Units[player_codes[i+1]]:
-            live=unitname+'_live'
-            died=unitname+'_dead'
-            inprogress=unitname+'_in_progress'
-            thisunit=[{live:0}, {died:0}, {inprogress:0}]
-            for dic in thisunit:
-                unitsdict.update(dic)
-        #find matching unit
-        unitdetails=snapshot[i+1]['unit']
+        unitdetails=player_info['unit']
         for thisunitname, details in unitdetails.items():
             live=thisunitname+'_live'
             died=thisunitname+'_dead'
@@ -48,10 +43,30 @@ def generate_unit_snapshot(snapshot, player_codes, protosswin):
             ingameunitstats=[{live:details['live']}, {died:details['died']}, {inprogress:details['in_progress']}]
             for dic in ingameunitstats:
                 unitsdict.update(dic)
-        totalunits.update(unitsdict)
-        totalunits.update({'Protosswin':protosswin})
-        totalunits.update
-    return totalunits
+        
+        #getting buildings data
+        buildingdict={}
+        buildingdetails=player_info['building']
+        for thisbuildingname, details in buildingdetails.items():
+            live=thisbuildingname+'_live'
+            died=thisbuildingname+'_dead'
+            inprogress=thisbuildingname+'_in_progress'
+            ingameunitstats=[{live:details['live']}, {died:details['died']}, {inprogress:details['in_progress']}]
+            for dic in ingameunitstats:
+                buildingdict.update(dic)
+
+        #getting resource data
+        resource_stats=[{(race+'_mineral_collection_rate'):player_info['resource_collection_rate']['minerals']},
+                {(race+'_gas_collection_rate'):player_info['resource_collection_rate']['minerals']},
+                {(race+'_unspent_minerals'):player_info['unspent_resources']['minerals']},
+                {(race+'_unspent_gas'):player_info['unspent_resources']['gas']}]
+        
+        snapshot_dict.update(unitsdict)
+        snapshot_dict.update(buildingdict)
+        snapshot_dict.update({'Protosswin':protosswin})
+        for stats in resource_stats:
+            snapshot_dict.update(stats)
+    return snapshot_dict
 
 def gen_total_timeline(game):
     metadata=game[3]
