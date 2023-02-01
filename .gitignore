@@ -1,3 +1,8 @@
+#replay files
+*.SC2Replay
+*.csv
+*.model
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
