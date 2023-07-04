@@ -11,15 +11,39 @@ def recursereplays(dir_path):
     """
     dir_list=list(dir_path.iterdir())
     print(dir_list)
-    replay_list=[]
+    replay_list={'pvp':[],
+                 'pvt':[],
+                 'pvz':[],
+                 'zvt':[],
+                 'tvt':[],
+                 'zvz':[]}
     for obj_path in tqdm.tqdm(dir_list):
         if obj_path.is_file():
             try:
                 replay = parse_replay(obj_path, local=True)
-                replay_list.append(replay)
                 # do stuff with the data
             except:
                 pass
+        try:
+            player1_workername=list(replay[1][2][1]['unit'].keys())[0]
+            player2_workername=list(replay[1][2][2]['unit'].keys())[0]
+        except IndexError:
+            pass
+        player_workertypes=[player1_workername, player2_workername]
+        if 'SCV' in player_workertypes:
+            if 'Probe' in player_workertypes:
+                replay_list['pvt'].append(replay)
+            if 'Drone' in player_workertypes:
+                replay_list['zvt'].append(replay)
+            else:
+                replay_list['tvt'].append(replay)
+        elif 'Probe' in player_workertypes:
+            if 'Drone' in player_workertypes:
+                replay_list['pvz'].append(replay)
+            else:
+                replay_list['pvp'].append(replay)
+        elif 'Drone' in player_workertypes:
+            replay_list['zvz'].append(replay)
     return replay_list
 
 def generate_snapshot(snapshot, player_codes, protosswin):

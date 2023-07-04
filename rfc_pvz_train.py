@@ -11,7 +11,7 @@ from pathlib import Path
 from zephyrus_sc2_parser import parse_replay
 import tqdm
 
-replays = Path('replays_raw')
+replays = Path('test')
 replay_list = replay.recursereplays(replays)
 
 totalunits=[]
