@@ -4,16 +4,23 @@ from sklearn import model_selection
 from sklearn import ensemble
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import classification_report, confusion_matrix
-import matplotlib
 import replay
 import pickle
 from pathlib import Path
 from zephyrus_sc2_parser import parse_replay
+import os
+from dotenv import load_dotenv
 import tqdm
 
-replays = Path('test')
+load_dotenv()
+replay_folder=os.getenv('PATHTOREPLAY')
+replays = Path(replay_folder)
 replay_list = replay.recursereplays(replays)
 
+#save parsed replays
+pickle.dump(replay_list, open('parsed_replays', 'wb'))
+
+#generate timeline as dataframe and save as csv
 for matchup, matchup_replays in replay_list.items():
     totalunits=[]
     for thisreplay in tqdm.tqdm(matchup_replays):
@@ -23,6 +30,7 @@ for matchup, matchup_replays in replay_list.items():
     games_data=games_data.fillna(0)
     games_data.to_csv(train_file_name)
 
+#RFC model for each matchup
 for matchup in replay_list.keys():
     data_path='data/'+str(matchup)+'_train.csv'
     games=pd.read_csv(data_path)

@@ -20,7 +20,7 @@ def recursereplays(dir_path):
     for obj_path in tqdm.tqdm(dir_list):
         if obj_path.is_file():
             try:
-                replay = parse_replay(obj_path, local=True)
+                replay = parse_replay(obj_path, local=True, tick=90)
                 # do stuff with the data
             except:
                 pass
