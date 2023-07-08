@@ -14,25 +14,34 @@ import tqdm
 replays = Path('test')
 replay_list = replay.recursereplays(replays)
 
-totalunits=[]
-for thisreplay in tqdm.tqdm(replay_list):
-    totalunits+=replay.gen_total_timeline(thisreplay)
+for matchup, matchup_replays in replay_list.items():
+    totalunits=[]
+    for thisreplay in tqdm.tqdm(matchup_replays):
+        totalunits+=replay.gen_total_timeline(thisreplay, matchup)
+    games_data=pd.DataFrame(totalunits)
+    train_file_name='data/'+str(matchup)+'_train.csv'
+    games_data=games_data.fillna(0)
+    games_data.to_csv(train_file_name)
 
-pvz_games = pd.DataFrame(totalunits)
-pvz_games.to_csv('pvz_train.csv')
-pvz_games = pvz_games.fillna(0)
+for matchup in replay_list.keys():
+    data_path='data/'+str(matchup)+'_train.csv'
+    games=pd.read_csv(data_path)
+    try:
+        games["result"] = games["result"].astype(int)
+        features = games.drop('result', axis=1)
+        results = games['result']
 
-pvz_games["Protosswin"] = pvz_games["Protosswin"].astype(int)
-x = pvz_games.drop('Protosswin', axis=1)
-y = pvz_games['Protosswin']
+        # implementing train-test-split, not required for applying the model
+        #X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=66)
 
-# implementing train-test-split
-X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=66)
+        # random forest model creation
+        rfc = ensemble.RandomForestClassifier()
+        rfc.fit(features,results)
+        filename='models/rfc_'+str(matchup)+'.model'
+        pickle.dump(rfc, open(filename, 'wb'))
+    except KeyError:
+        pass
 
-
-# random forest model creation
-rfc = ensemble.RandomForestClassifier()
-rfc.fit(X_train,y_train)
 # predictions
 rfc_predict = rfc.predict(X_test)
 
