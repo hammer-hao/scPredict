@@ -5,9 +5,9 @@ from sklearn import ensemble
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import classification_report, confusion_matrix
 import replay
+import training_features
 import pickle
 from pathlib import Path
-from zephyrus_sc2_parser import parse_replay
 import os
 from dotenv import load_dotenv
 import tqdm
@@ -15,6 +15,7 @@ import tqdm
 load_dotenv()
 replay_folder=os.getenv('PATHTOREPLAY')
 replays = Path(replay_folder)
+
 replay_list = replay.recursereplays(replays)
 
 #save parsed replays
@@ -22,15 +23,19 @@ pickle.dump(replay_list, open('parsed_replays', 'wb'))
 
 #generate timeline as dataframe and save as csv
 for matchup, matchup_replays in replay_list.items():
-    totalunits=[]
-    for thisreplay in tqdm.tqdm(matchup_replays):
-        totalunits+=replay.gen_total_timeline(thisreplay, matchup)
-    games_data=pd.DataFrame(totalunits)
+    games_data=matchup_replays
     train_file_name='data/'+str(matchup)+'_train.csv'
     games_data=games_data.fillna(0)
     games_data.to_csv(train_file_name)
 
+pvp_data=replay_list['pvp']
+pvp_features=training_features.pvp
+columns_bool=pvp_data.columns.isin(pvp_features)
+pvp_data_filter=pvp_data.loc[:, columns_bool]
+pvp_data_filter.to_csv('pvp_train.csv')
+
 #RFC model for each matchup
+
 for matchup in replay_list.keys():
     data_path='data/'+str(matchup)+'_train.csv'
     games=pd.read_csv(data_path)
@@ -43,12 +48,21 @@ for matchup in replay_list.keys():
         #X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=66)
 
         # random forest model creation
-        rfc = ensemble.RandomForestClassifier()
+        rfc = ensemble.RandomForestClassifier(n_estimators=1500, n_jobs=-1)
         rfc.fit(features,results)
         filename='models/rfc_'+str(matchup)+'.model'
         pickle.dump(rfc, open(filename, 'wb'))
     except KeyError:
         pass
+
+games=pd.read_csv('pvp_train.csv', index_col=0).fillna(0)
+games.loc[:,"result"] = games["result"].astype(int)
+features = games.drop('result', axis=1)
+results = games['result']
+rfc = ensemble.RandomForestClassifier(n_estimators=1500, n_jobs=-1, class_weight='balanced', max_features='sqrt')
+rfc.fit(features,results)
+filename='pvp_test.model'
+pickle.dump(rfc, open(filename, 'wb'))
 
 # predictions
 rfc_predict = rfc.predict(X_test)

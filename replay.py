@@ -11,12 +11,13 @@ def recursereplays(dir_path):
     """
     dir_list=list(dir_path.iterdir())
     print(dir_list)
-    replay_list={'pvp':[],
-                 'pvt':[],
-                 'pvz':[],
-                 'zvt':[],
-                 'tvt':[],
-                 'zvz':[]}
+    replay_ls={'pvp':pd.DataFrame(),
+                    'pvt':pd.DataFrame(),
+                    'pvz':pd.DataFrame(),
+                    'zvt':pd.DataFrame(),
+                    'tvt':pd.DataFrame(),
+                    'zvz':pd.DataFrame()}
+
     for obj_path in tqdm.tqdm(dir_list):
         if obj_path.is_file():
             try:
@@ -30,21 +31,30 @@ def recursereplays(dir_path):
             player_workertypes=[player1_workername, player2_workername]
             if 'SCV' in player_workertypes:
                 if 'Probe' in player_workertypes:
-                    replay_list['pvt'].append(replay)
+                    #replay_ls['pvt'].append(replay)
+                    matchup='pvt'
                 elif 'Egg' in player_workertypes:
-                    replay_list['zvt'].append(replay)
+                    #replay_ls['zvt'].append(replay)
+                    matchup='zvt'
                 else:
-                    replay_list['tvt'].append(replay)
+                    #replay_ls['tvt'].append(replay)
+                    matchup='tvt'
             elif 'Probe' in player_workertypes:
-                if 'Egg' in player_workertypes:
-                    replay_list['pvz'].append(replay)
+                if ('Egg' in player_workertypes)|('Larva') in player_workertypes:
+                    #replay_ls['pvz'].append(replay)
+                    matchup='pvz'
                 else:
-                    replay_list['pvp'].append(replay)
-            elif 'Egg' in player_workertypes:
-                replay_list['zvz'].append(replay)
+                    #replay_ls['pvp'].append(replay)
+                    matchup='pvp'
+            elif ('Egg' in player_workertypes)|('Larva') in player_workertypes:
+                #replay_ls['zvz'].append(replay)
+                matchup='zvz'
+            timeline=pd.DataFrame(gen_total_timeline(replay, matchup))
+            print(timeline)
+            replay_ls[matchup]=replay_ls[matchup].append(timeline, ignore_index=True)
         except IndexError:
             pass
-    return replay_list
+    return replay_ls
 
 #define function to add prefix to player keys in mirrors (to prevent repeated keys)
 def prepend_playernumbers(dictionary, prefix):
