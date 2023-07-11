@@ -10,25 +10,56 @@ import pandas as pd
 import training_features
 import matplotlib.pyplot as plt
 
-file = open('pvp_test.model','rb')
-pvz_rfc=pickle.load(file)
+file = open('D:/sc2models/pvt_test_logit.model','rb')
+pvt_logit=pickle.load(file)
+file.close()
+
+file = open('D:/sc2models/pvt_test_logit_w_interactions.model','rb')
+pvt_logitint=pickle.load(file)
 file.close()
 
 df_dict={}
-for feature in training_features.pvp:
+for feature in training_features.pvt:
     df_dict.update({feature:0})
 
-def predict_game(game):
-    thisreplay=parse_replay(game)
-    totallist=[df_dict]+replay.gen_total_timeline(thisreplay, 'pvp')
+def predict_game(game, model):
+    thisreplay=parse_replay(game, local=True, tick=90)
+    totallist=[df_dict]+replay.gen_total_timeline(thisreplay, 'pvt')
     timeline=pd.DataFrame(totallist).drop(['result'], axis=1).fillna(0)
-    predictions = pvz_rfc.predict_proba(timeline)
+    predictions = model.predict_proba(timeline)
     winratearr = [(1-percentage[0]) for percentage in predictions]
     return winratearr, timeline
 
-test, game_details=predict_game('Altitude LE (9).SC2Replay')
-fig= plt.plot(test)
+logit_winrates, game_details_logit=predict_game('Ancient Cistern LE (10).SC2Replay', pvt_logit)
+
+def make_interactions(df, root):
+    feature = root
+    specific_feature = df[root]
+    interaction_terms = pd.DataFrame()
+    for column in df.columns:
+        if column != feature:
+            interaction_term = specific_feature * df[column]  # Create the interaction term
+            interaction_terms[column+'_interaction'] = interaction_term# Reshape and append to the list
+    X_interactions = pd.concat([df, interaction_terms], axis=1)
+    return X_interactions
+
+def predict_with_int(game, model):
+    thisreplay=parse_replay(game, local=True, tick=90)
+    totallist=[df_dict]+replay.gen_total_timeline(thisreplay, 'pvt')
+    timeline=pd.DataFrame(totallist).drop(['result'], axis=1).fillna(0)
+    timeline_int=make_interactions(timeline, 'loop')
+    predictions = model.predict_proba(timeline_int)
+    winratearr = [(1-percentage[0]) for percentage in predictions]
+    return winratearr, timeline
+
+
+logit_winrates_with_interactions, game_details_logitint=predict_with_int('Ancient Cistern LE (10).SC2Replay', pvt_logitint)
+
+
+fig= plt.plot(logit_winrates_with_interactions)
+fig= plt.plot(logit_winrates)
 plt.xlabel('time')
 plt.ylabel('winrate')
-plt.title('win rate in real time')
-plt.savefig('winrate.png')
+plt.title('winrate by gameloop')
+plt.savefig('winrate by gameloop.png')
+plt.cla()
