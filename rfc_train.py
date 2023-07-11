@@ -21,7 +21,7 @@ replays = Path(replay_folder)
 replay_list = replay.recursereplays(replays)
 
 #save parsed replays
-pickle.dump(replay_list, open('parsed_replays', 'wb'))
+pickle.dump(replay_list, open('parsed_replays.SC2Replay', 'wb'))
 
 #generate timeline as dataframe and save as csv
 for matchup, matchup_replays in replay_list.items():
