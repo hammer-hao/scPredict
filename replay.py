@@ -36,17 +36,17 @@ def recursereplays(dir_path):
                 elif 'Egg' in player_workertypes:
                     #replay_ls['zvt'].append(replay)
                     matchup='zvt'
-                else:
+                elif ('Probe' not in player_workertypes) & ('Egg' not in player_workertypes) & ('Larva' not in player_workertypes):
                     #replay_ls['tvt'].append(replay)
                     matchup='tvt'
             elif 'Probe' in player_workertypes:
-                if ('Egg' in player_workertypes)|('Larva') in player_workertypes:
+                if ('Egg' in player_workertypes)|(('Larva') in player_workertypes):
                     #replay_ls['pvz'].append(replay)
                     matchup='pvz'
-                else:
+                elif ('Egg' not in player_workertypes)&(('Larva') not in player_workertypes):
                     #replay_ls['pvp'].append(replay)
                     matchup='pvp'
-            elif ('Egg' in player_workertypes)|('Larva') in player_workertypes:
+            elif ('Egg' in player_workertypes)|(('Larva') in player_workertypes):
                 #replay_ls['zvz'].append(replay)
                 matchup='zvz'
             timeline=pd.DataFrame(gen_total_timeline(replay, matchup))

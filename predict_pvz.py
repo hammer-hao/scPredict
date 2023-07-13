@@ -30,7 +30,7 @@ def predict_game(game, model):
     winratearr = [(1-percentage[0]) for percentage in predictions]
     return winratearr, timeline
 
-logit_winrates, game_details_logit=predict_game('Ancient Cistern LE (10).SC2Replay', pvt_logit)
+pvt_logit=pickle.load(file)
 
 def make_interactions(df, root):
     feature = root
@@ -52,14 +52,15 @@ def predict_with_int(game, model):
     winratearr = [(1-percentage[0]) for percentage in predictions]
     return winratearr, timeline
 
-
 logit_winrates_with_interactions, game_details_logitint=predict_with_int('Ancient Cistern LE (10).SC2Replay', pvt_logitint)
 
-
-fig= plt.plot(logit_winrates_with_interactions)
-fig= plt.plot(logit_winrates)
-plt.xlabel('time')
-plt.ylabel('winrate')
-plt.title('winrate by gameloop')
-plt.savefig('winrate by gameloop.png')
-plt.cla()
+def predict_game_all(path):
+    winr1, gamedet = predict_game(path, pvt_logit)
+    winr2, gamedet2 = predict_with_int(path, pvt_logitint)
+    fig= plt.plot(gamedet)
+    fig= plt.plot(gamedet2)
+    plt.xlabel('gameloop')
+    plt.ylabel('winrate')
+    plt.title('winrate by gameloop')
+    plt.savefig('winrate by gameloop.png')
+    plt.cla()
