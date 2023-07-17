@@ -24,6 +24,9 @@ replay_list = replay.recursereplays(replays)
 with open('D:/sc2models/parsed_replays', 'wb') as file:
     pickle.dump(replay_list, file)
 
+with open('parsed_replays', 'rb') as file:
+    replay_list = pickle.load(file)
+
 #generate timeline as dataframe and save as csv
 for matchup, matchup_replays in replay_list.items():
     games_data=matchup_replays

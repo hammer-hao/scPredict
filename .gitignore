@@ -2,6 +2,7 @@
 *.SC2Replay
 *.csv
 *.model
+parsed_replays
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

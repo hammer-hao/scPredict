@@ -1,8 +1,3 @@
-from sklearn.model_selection import train_test_split
-from sklearn import model_selection
-from sklearn import ensemble
-from sklearn.model_selection import cross_val_score
-from sklearn.metrics import classification_report, confusion_matrix
 import pickle
 import replay
 from zephyrus_sc2_parser import parse_replay
