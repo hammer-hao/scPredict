@@ -4,6 +4,10 @@
 *.model
 parsed_replays
 
+#parser
+zephyrus_sc2_parser/
+zephyrus_sc2_parser-0.3.8.dist-info/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
