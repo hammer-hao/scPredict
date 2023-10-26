@@ -9,16 +9,5 @@ Real-time winrate prediction from starcraft 2 matches. The classification model 
 - Random Forests
 - MLP Classification
 
-## Validation
-
-Models were evaluated based on three metrics: F1-score, Accuracy, and RMSE:
-
-|Model|F1|Accuracy|RMSE|
-|-|-|-|-|
-Logit|-|-|-|
-Gradient Boosting|-|-|-|
-Random Forest|-|-|-|
-MLP|-|-|-|
-
 ## How to use
 
