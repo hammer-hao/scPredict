@@ -1,22 +1,26 @@
+from pathlib import Path
 import torch
 import sc2reader
-
-replay = sc2reader.load_replay('test.SC2Replay')
-
-for event in replay.events:
-    if not hasattr(event, 'location'):
-        event.location=(0,0)
-    print(f'{event.name} at {event.location} by {event.upkeep_pid}: {event.frame}')
+from tqdm import tqdm
 
 class Parser():
     def __init__(self, path):
-        self.path = path
+        self.path = Path(path)
     
     def parse_replays(self):
-        sc2reader.load_replay('test.SC2Replay')
+        all_replays = []
+        for file in tqdm(self.path.iterdir()):
+            try:
+                replay_path = str(file)
+                all_replays.append(parse_replay(replay_path))
+            except Exception as e:
+                print(f"Error processing {file}: {e}")
+        return all_replays
 
 def parse_replay(path):
     replay = sc2reader.load_replay(path)
+    winner = replay.winner
+    stats = []
     for event in replay.events:
         if not hasattr(event, 'location'):
             event.location=(0,0)
@@ -24,5 +28,6 @@ def parse_replay(path):
         else:
             has_location = True
 
-        
-        
+        if event.name == "PlayerStatsEvent":
+            stats.append(event)
+    return stats, winner
