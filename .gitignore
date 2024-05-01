@@ -2,7 +2,7 @@
 *.SC2Replay
 *.csv
 *.model
-parsed_replays
+.env
 
 #parser
 zephyrus_sc2_parser/
