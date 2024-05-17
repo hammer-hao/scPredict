@@ -7,6 +7,9 @@ test_replay/
 replays_raw/
 replays_processed/
 
+#notebooks
+*.ipynb
+
 #parser
 zephyrus_sc2_parser/
 zephyrus_sc2_parser-0.3.8.dist-info/
