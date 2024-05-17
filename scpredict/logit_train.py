@@ -1,6 +1,6 @@
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
-from settings import *
+from scpredict.settings import *
 import pickle
 from dotenv import load_dotenv
 import os

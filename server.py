@@ -1,7 +1,7 @@
 import os
 from flask import Flask, flash, request, redirect, url_for, make_response
 from werkzeug.utils import secure_filename
-from scpredict import mlp_predict
+from scpredict.scpredict import mlp_predict
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'sc2replay'}

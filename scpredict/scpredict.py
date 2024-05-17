@@ -1,5 +1,5 @@
-from parsing import ZGameParser
-from settings import *
+from scpredict.parsing import ZGameParser
+from scpredict.settings import *
 import pandas as pd
 import pickle
 from dotenv import load_dotenv
