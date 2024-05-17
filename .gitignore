@@ -3,6 +3,9 @@
 *.csv
 *.model
 .env
+test_replay/
+replays_raw/
+replays_processed/
 
 #parser
 zephyrus_sc2_parser/
