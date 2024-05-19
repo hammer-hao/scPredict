@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import UploadForm from './UploadForm';
 import LineChart from './LineChart';
+import './App.css';
 
 const App = () => {
   const [winRates, setWinRates] = useState([]);

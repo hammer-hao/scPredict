@@ -27,12 +27,15 @@ const LineChart = ({ winRates }) => {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false, // Allow custom sizing
         scales: {
           x: {
             type: 'category',
           },
           y: {
             type: 'linear',
+            min: 0,
+            max: 1, // Set Y-axis range from 0 to 1
             beginAtZero: true,
           },
         },
@@ -40,7 +43,11 @@ const LineChart = ({ winRates }) => {
     });
   }, [winRates]);
 
-  return <canvas ref={chartRef} />;
+  return (
+    <div style={{ width: '80%', height: '400px', margin: 'auto' }}>
+      <canvas ref={chartRef} />
+    </div>
+  );
 };
 
 export default LineChart;
