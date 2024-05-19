@@ -1,36 +1,51 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import os
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from flask_restful import Api, Resource
+from werkzeug.utils import secure_filename
+from scpredict.scpredict import Predictor
 
-const UploadForm = ({ setWinRates }) => {
-  const [file, setFile] = useState(null);
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'sc2replay'}
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+predictor = Predictor()
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('file', file);
+app = Flask(__name__)
+CORS(app)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-    try {
-      const response = await axios.post('http://localhost:5000/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setWinRates(response.data.winrates);
-    } catch (error) {
-      console.error('Error uploading file:', error);
-    }
-  };
+api = Api(app)
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <input type="file" onChange={handleFileChange} accept=".sc2replay" />
-      <button type="submit">Upload Replay</button>
-    </form>
-  );
-};
+class ReplayHandler(Resource):
 
-export default UploadForm;
+    def allowed_file(self, filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    
+    def post(self):
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
+        
+        file = request.files.get("file")
+        if file and self.allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(path)
+            
+            try:
+                winrates = list(predictor.predict(path))
+                print("Predicted win rates:", winrates)
+                os.remove(path)
+                return jsonify({'winrates': winrates})
+            except Exception as e:
+                print("Prediction error:", str(e))
+                return jsonify({'error': 'Prediction failed'}), 500
+        
+        return jsonify({'error': 'Invalid file format'}), 400
+
+api.add_resource(ReplayHandler, "/")
+
+if __name__ == "__main__":
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+    app.run(host='0.0.0.0', debug=True)
