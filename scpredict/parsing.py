@@ -144,6 +144,8 @@ class ZGameParser():
         replay = z_parse_replay(path, local=True, tick=self.ticks, network=False)
         race_1 = replay.players[1].race
         race_2 = replay.players[2].race
+        name_1 = replay.players[1].name
+        name_2 = replay.players[2].name
         winner = replay.metadata['winner']
         invert_players = False
         if race_1 == "Protoss":
@@ -170,9 +172,11 @@ class ZGameParser():
                 invert_players = True
             elif race_2 == "Zerg":
                 matchup = "zvz"
-        
+
         if invert_players:
             winner = 3 - int(winner)
+            name_2 = replay.players[1].name
+            name_1 = replay.players[2].name
 
         for frame in replay.timeline:
             timeframe = SC2TimeFrame()
@@ -205,7 +209,7 @@ class ZGameParser():
             self.timeline.append(timeframe.dict)
         
         # returns a list of dictonaries, each entry representing a tick in the game
-        return self.timeline, matchup
+        return self.timeline, matchup, name_1, name_2
 
 class ZBulkParser():
     def __init__(self):

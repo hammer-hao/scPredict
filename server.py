@@ -33,10 +33,12 @@ class ReplayHandler(Resource):
             file.save(path)
             
             try:
-                winrates = list(predictor.predict(path))
+                winrates, name_1, name_2 = predictor.predict(path)
+                winrates = list(winrates)
                 print("Predicted win rates:", winrates)
                 os.remove(path)
-                return jsonify({'winrates': winrates})
+                return jsonify({'winrates': winrates,
+                                'player_1_name': str(name_1)})
             except Exception as e:
                 print("Prediction error:", str(e))
                 return jsonify({'error': 'Prediction failed'}), 500

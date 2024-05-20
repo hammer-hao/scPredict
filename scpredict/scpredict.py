@@ -22,7 +22,7 @@ class Predictor():
                 self.models[matchup] = pickle.load(f)
         
     def predict(self, path_to_replay):
-        timeline, matchup = self.parser.parse(path=path_to_replay)
+        timeline, matchup, name_1, name_2 = self.parser.parse(path=path_to_replay)
         prediction_features = pd.DataFrame(columns=self.feature_names[matchup])
         with warnings.catch_warnings():
             warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -32,4 +32,4 @@ class Predictor():
         prediction_features = prediction_features.fillna(0)
         logit_predictions = self.models[matchup].predict_proba(prediction_features)[:, -1]
         self.parser.reset()
-        return logit_predictions
+        return logit_predictions, name_1, name_2
