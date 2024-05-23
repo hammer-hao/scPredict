@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
-const LineChart = ({ winRates }) => {
+const LineChart = ({ winRates, playerName }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -25,7 +25,7 @@ const LineChart = ({ winRates }) => {
         labels: winRates.map((_, index) => formatTime(index)),
         datasets: [
           {
-            label: 'Win Rates For Player 1',
+            label: `Predicted Win Probability: ${playerName}`,
             data: winRates,
             fill: false,
             borderColor: 'rgba(75,192,192,1)',
@@ -48,7 +48,7 @@ const LineChart = ({ winRates }) => {
         },
       },
     });
-  }, [winRates]);
+  }, [winRates, playerName]);
 
   return (
     <div style={{ width: '80%', height: '480px', margin: 'auto' }}>

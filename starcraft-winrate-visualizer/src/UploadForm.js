@@ -11,7 +11,7 @@ const FormContainer = styled(Paper)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-const UploadForm = ({ setWinRates }) => {
+const UploadForm = ({ setWinRates, setPlayerName }) => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +32,7 @@ const UploadForm = ({ setWinRates }) => {
         },
       });
       setWinRates(response.data.winrates);
+      setPlayerName(response.data.player_1_name);
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
