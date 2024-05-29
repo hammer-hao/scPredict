@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# ScPredict
+
+replays_raw/
+replays_processed/zephyrus/parsed.pt
+
 # C extensions
 *.so
 
