@@ -1,9 +1,9 @@
 # %%
 import pickle
 from tqdm import tqdm
-from settings import *
+from scpredict.settings import *
 import pandas as pd
-from parsing import ZBulkParser
+from scpredict.parsing import ZBulkParser
 
 parser = ZBulkParser()
 parsed_replays = parser.parse_folder('replays_raw')
@@ -41,15 +41,6 @@ for matchup in matchups:
 
     df.to_csv(f'replays_processed/zephyrus/{matchup}.csv', index=False)
 
-# %%
-pvt_df = pd.read_csv('replays_processed/zephyrus/pvt.csv')
-pvt_df.winner
-
-# %%
-from parsing import ZGameParser
-ZGameParser.parse(path='rest_replay/maxclemgame5.SC2Replay')
-
-# %%
 
 
 
