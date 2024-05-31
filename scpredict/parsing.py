@@ -1,5 +1,4 @@
 from pathlib import Path
-import torch
 import re
 import sc2reader
 from tqdm import tqdm
@@ -88,38 +87,6 @@ def parse_replay_lite(path):
                 else:
                     stats[event.second].update(update)
     return stats, winner
-
-def to_flattened_tensor(replay_pack):
-    timestamps = []
-    for replay in tqdm(replay_pack):
-        game = replay[0]
-        result = replay[1]
-        for second, timestamp in game.items():
-            timestamp_tensor_1 = torch.tensor(list(timestamp[1].values()), dtype=torch.float64)
-            timestamp_tensor_2 = torch.tensor(list(timestamp[2].values()), dtype=torch.float64)
-            timestamp_tensor = torch.concat([timestamp_tensor_1, timestamp_tensor_2, torch.tensor([second], dtype=torch.long), torch.tensor([result], dtype=torch.long)])
-            timestamps.append(timestamp_tensor)
-    flattened_tensor = torch.stack(timestamps)
-    return flattened_tensor
-
-def to_weighted_tensor(replay_pack):
-    timestamps = []
-    for replay in tqdm(replay_pack):
-        replay_timestamps = []
-        game = replay[0]
-        result = replay[1]
-        for second, timestamp in game.items():
-            timestamp_tensor_1 = torch.tensor(list(timestamp[1].values()), dtype=torch.float64)
-            timestamp_tensor_2 = torch.tensor(list(timestamp[2].values()), dtype=torch.float64)
-            timestamp_tensor = torch.concat([timestamp_tensor_1, timestamp_tensor_2, torch.tensor([second], dtype=torch.long), torch.tensor([result], dtype=torch.long)])
-            replay_timestamps.append(timestamp_tensor)
-            length = second
-        replay_flattened_tensor = torch.stack(replay_timestamps)
-        time_weights = (replay_flattened_tensor[:, -2] / length).unsqueeze(1)
-        replay_flattened_tensor = torch.cat((replay_flattened_tensor, time_weights), dim=1)
-        timestamps.append(replay_flattened_tensor)
-    flattened_tensor = torch.cat(timestamps, dim = 0)
-    return flattened_tensor
 
 class SC2TimeFrame():
     def __init__(self):
@@ -227,7 +194,7 @@ class ZBulkParser():
         for file in tqdm(self.path.iterdir()):
             try:
                 replay_path = str(file)
-                timeline, matchup = self.parser.parse(replay_path)
+                timeline, matchup, name_1, name_2 = self.parser.parse(replay_path)
                 self.dict[matchup] += timeline
                 self.parser.reset()
             except Exception as e:
