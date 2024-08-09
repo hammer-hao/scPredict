@@ -36,6 +36,7 @@ class Predictor():
         
         self.parser.reset()
         return logit_predictions, name_1, name_2
+
     
     def get_shap(self, path_to_replay):
         timeline, matchup, name_1, name_2 = self.parser.parse(path=path_to_replay)

@@ -149,6 +149,7 @@ class ZGameParser():
             timeframe = SC2TimeFrame()
             timeframe.update_meta('winner', winner)
             timeframe.update_meta('gameloop', frame[1]['gameloop'])
+            timeframe.update_meta('file_name', path)
             for player, stats in frame.items():
                 if invert_players:
                     player = 3 - int(player)
