@@ -6,16 +6,22 @@ from dotenv import load_dotenv
 import os
 import shap
 import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 class Predictor():
     def __init__(self):
         load_dotenv()
         self.model_path = os.environ.get('PATHTOMODELS')
         self.explainer_path = os.environ.get('PATHTOEXPLAINERS')
+        self.path_to_pca = os.environ.get('PATHTOPCA')
         self.models = {}
         self.matchups = matchups
         self.parser = ZGameParser()
         self.explainers = {}
+        self.pca_scalors = {}
+        self.pca_transformed_data = {}
+        self.pca = {}
 
         with open(f'{self.model_path}/feature_names.pkl', 'rb') as f:
             self.feature_names = pickle.load(f)
@@ -25,7 +31,13 @@ class Predictor():
                 self.models[matchup] = pickle.load(f)
             with open(f'{self.explainer_path}/{matchup}_shap.pkl', 'rb') as f:
                 self.explainers[matchup] = pickle.load(f)
-    
+            with open(f'{self.path_to_pca}/scalor/{matchup}_scalor.pkl', 'rb') as f:
+                self.pca_scalors[matchup] = pickle.load(f)
+            with open(f'{self.path_to_pca}/pca/{matchup}_pca.pkl', 'rb') as f:
+                self.pca[matchup] = pickle.load(f)
+            with open(f'{self.path_to_pca}/data/{matchup}_transformed_data.pkl', 'rb') as f:
+                self.pca_transformed_data[matchup] = pickle.load(f)
+
     def predict(self, path_to_replay):
         timeline, matchup, name_1, name_2 = self.parser.parse(path=path_to_replay)
         features = self.feature_names[matchup]
