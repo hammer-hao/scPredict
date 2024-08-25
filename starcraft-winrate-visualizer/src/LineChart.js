@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
-const LineChart = ({ winRates, playerName }) => {
+const LineChart = ({ winRates, playerName, onPointClick }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -29,12 +29,13 @@ const LineChart = ({ winRates, playerName }) => {
             data: winRates,
             fill: false,
             borderColor: 'rgba(75,192,192,1)',
+            pointBackgroundColor: 'rgba(75,192,192,1)',
           },
         ],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Allow custom sizing
+        maintainAspectRatio: false,
         scales: {
           x: {
             type: 'category',
@@ -42,16 +43,23 @@ const LineChart = ({ winRates, playerName }) => {
           y: {
             type: 'linear',
             min: 0,
-            max: 1, // Set Y-axis range from 0 to 1
+            max: 1,
             beginAtZero: true,
           },
+        },
+        onClick: (event) => {
+          const points = chartInstanceRef.current.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
+          if (points.length) {
+            const index = points[0].index;
+            onPointClick(index);
+          }
         },
       },
     });
   }, [winRates, playerName]);
 
   return (
-    <div style={{ width: '80%', height: '480px', margin: 'auto' }}>
+    <div style={{ width: '100%', height: '480px' }}>
       <canvas ref={chartRef} />
     </div>
   );

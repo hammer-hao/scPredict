@@ -11,7 +11,7 @@ const FormContainer = styled(Paper)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-const UploadForm = ({ setWinRates, setPlayerName }) => {
+const UploadForm = ({ setWinRates, setPlayerName, setPlayer2Name, setFilename }) => { // Add setFilename
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,13 +26,15 @@ const UploadForm = ({ setWinRates, setPlayerName }) => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('https://ociscwinrates.hammerhao.net/', formData, {
+      const response = await axios.post('https://sciiwinrates.hammerhao.net/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       setWinRates(response.data.winrates);
       setPlayerName(response.data.player_1_name);
+      setPlayer2Name(response.data.player_2_name);
+      setFilename(response.data.filename); // Store the filename
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {

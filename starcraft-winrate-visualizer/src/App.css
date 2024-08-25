@@ -1,11 +1,22 @@
+/* Global settings that might be causing issues */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body, html, #root, .App {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .App {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  text-align: center;
-  margin: 20px;
+  justify-content: flex-start; /* Start content at the top */
+  height: auto; /* Let height adjust based on content */
+  padding: 20px; /* Add padding for spacing */
 }
 
 h1 {
@@ -57,4 +68,61 @@ button {
   to {
     transform: rotate(360deg);
   }
+}
+/*
+.chart-container {
+  display: flex;
+  width: 100%;
+  height: 480px;
+  transition: width 0.5s ease-in-out, transform 0.5s ease-in-out;
+  position: relative;
+}
+*/
+
+/*
+.chart-container.shift-left {
+  width: 60%; 
+  transform: translateX(-20%);
+}
+*/
+
+.details-panel {
+  width: 15%; /* Adjusted to match the shift */
+  background-color: #f5f5f5;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+  padding: 20px;
+  border-left: 1px solid #ddd;
+  box-shadow: -3px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-panel-container {
+  width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.panel {
+  margin-top: 20px;
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
