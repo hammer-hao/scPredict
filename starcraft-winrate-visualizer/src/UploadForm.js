@@ -26,7 +26,7 @@ const UploadForm = ({ setWinRates, setPlayerName }) => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('https://ociscwinrates.hammerhao.net/', formData, {
+      const response = await axios.post('https://sciiwinrates.hammerhao.net/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
